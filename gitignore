@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# EasyOCR model files (too large for GitHub)
+*.pth
+*.ckpt
+.EasyOCR/
+
+# Test images (don't upload personal test data)
+test_images/
+*.jpg
+*.jpeg
+*.png
+*.pdf
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+
+# Audio cues (will be generated on setup)
+audio_cues/*.wav
+
+# Output files
+outputs/
+results/

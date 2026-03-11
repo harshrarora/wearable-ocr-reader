@@ -1,0 +1,20 @@
+# Core dependencies
+easyocr==1.7.1
+opencv-python==4.8.1.78
+numpy==1.24.4
+Pillow==10.0.1
+
+# Text-to-speech
+pyttsx3==2.90
+
+# Optional: For Windows native TTS (more reliable on Windows)
+# pywin32==306
+
+# Optional: For finger tracking mode
+# mediapipe==0.10.9
+
+# Utilities
+torch==2.1.0
+torchvision==0.16.0
+
+# Note: EasyOCR will auto-download language models on first run (~100MB)
