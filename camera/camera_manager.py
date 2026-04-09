@@ -35,6 +35,51 @@ class CameraManager:
 
     # ── public API ──────────────────────────────────────────
 
+    # def start(self):
+    #     """Open the camera and begin background capture."""
+    #     logger.info(
+    #         "Opening camera %d  (%dx%d @ %d FPS requested)",
+    #         self.camera_index, self.width, self.height, CAMERA_FPS,
+    #     )
+    #
+    #     #self._cap = cv2.VideoCapture(self.camera_index)
+    #     self._cap = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW)
+    #     # import platform
+    #     #
+    #     # if platform.system() == "Windows":
+    #     #     #self._cap = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW)
+    #     #     import config
+    #     #
+    #     #     if config.CAMERA_SOURCE == "ip":
+    #     #         print("[Camera] Using IP camera...")
+    #     #         self._cap = cv2.VideoCapture(config.IP_CAMERA_URL)
+    #     #     else:
+    #     #         print("[Camera] Using webcam...")
+    #     #         self._cap = cv2.VideoCapture(config.CAMERA_INDEX, cv2.CAP_DSHOW)
+    #
+    #         # Apply settings
+    #         self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, config.CAMERA_WIDTH)
+    #         self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, config.CAMERA_HEIGHT)
+    #         self._cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+    #
+    #         if not self._cap.isOpened():
+    #             raise RuntimeError("Failed to open camera")
+    #     else:
+    #         self._cap = cv2.VideoCapture(self.camera_index)
+    #     #if not self._cap.isOpened():
+    #     #   raise RuntimeError(f"Cannot open camera index {self.camera_index}")
+    #
+    #     self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
+    #     self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
+    #     self._cap.set(cv2.CAP_PROP_FPS, CAMERA_FPS)
+    #
+    #     actual_w = int(self._cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    #     actual_h = int(self._cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    #     logger.info("Camera ready: %dx%d", actual_w, actual_h)
+    #
+    #     self._running = True
+    #     self._thread = threading.Thread(target=self._capture_loop, daemon=True)
+    #     self._thread.start()
     def start(self):
         """Open the camera and begin background capture."""
         logger.info(
@@ -42,17 +87,18 @@ class CameraManager:
             self.camera_index, self.width, self.height, CAMERA_FPS,
         )
 
-        #self._cap = cv2.VideoCapture(self.camera_index)
+        # Use DirectShow (best for Windows + DroidCam USB)
         # self._cap = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW)
-        import platform
+        self._cap = cv2.VideoCapture(self.camera_index)
 
-        if platform.system() == "Windows":
+        if not self._cap.isOpened():
+            # fallback to DirectShow
             self._cap = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW)
-        else:
-            self._cap = cv2.VideoCapture(self.camera_index)
+
         if not self._cap.isOpened():
             raise RuntimeError(f"Cannot open camera index {self.camera_index}")
 
+        # Apply settings
         self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
         self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
         self._cap.set(cv2.CAP_PROP_FPS, CAMERA_FPS)
@@ -61,14 +107,25 @@ class CameraManager:
         actual_h = int(self._cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         logger.info("Camera ready: %dx%d", actual_w, actual_h)
 
-        self._running = True
-        self._thread = threading.Thread(target=self._capture_loop, daemon=True)
-        self._thread.start()
+        # self._running = True
+        # self._thread = threading.Thread(target=self._capture_loop, daemon=True)
+        # self._thread.start()
 
+    # def get_frame(self):
+    #     """Return a *copy* of the latest frame, or ``None``."""
+    #     with self._lock:
+    #         return self._frame.copy() if self._frame is not None else None
     def get_frame(self):
-        """Return a *copy* of the latest frame, or ``None``."""
-        with self._lock:
-            return self._frame.copy() if self._frame is not None else None
+        if self._cap is None:
+            return None
+
+        ret, frame = self._cap.read()
+
+        if not ret:
+            return None
+
+        return frame
+
 
     @property
     def fps(self):
