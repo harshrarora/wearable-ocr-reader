@@ -501,9 +501,41 @@ class WearableReader:
         elapsed = time.time() - t0
         time.sleep(max(0, config.MAIN_LOOP_DELAY - elapsed))
 
+    # def _count_money(self):
+    #     if not self.currency:
+    #         self._announce("Currency not available")
+    #         return
+    #
+    #     now = time.time()
+    #     if now - self.last_currency_time < 3:
+    #         return
+    #
+    #     logger.info("Counting money...")
+    #     self._announce("Counting money please wait")
+    #
+    #     frame = self.camera.get_frame()
+    #     if frame is None:
+    #         self._announce("Camera error")
+    #         return
+    #
+    #     try:
+    #         total, breakdown, _ = self.currency.detect_and_count(frame)
+    #
+    #         result_text = self.currency.format_result(total, breakdown)
+    #
+    #         logger.info(f"CURRENCY: {result_text}")
+    #
+    #         self._announce(result_text)
+    #
+    #         self.last_currency_time = now
+    #
+    #     except Exception as e:
+    #         logger.error(f"Currency error: {e}")
+    #         self._announce("Currency detection failed")
+
     def _count_money(self):
         if not self.currency:
-            self._announce("Currency not available")
+            self._announce_sync("Currency not available")
             return
 
         now = time.time()
@@ -511,11 +543,11 @@ class WearableReader:
             return
 
         logger.info("Counting money...")
-        self._announce("Counting money please wait")
+        self._announce_sync("Counting")
 
         frame = self.camera.get_frame()
         if frame is None:
-            self._announce("Camera error")
+            self._announce_sync("Camera error")
             return
 
         try:
@@ -525,13 +557,13 @@ class WearableReader:
 
             logger.info(f"CURRENCY: {result_text}")
 
-            self._announce(result_text)
+            self._announce_sync(result_text)
 
             self.last_currency_time = now
 
         except Exception as e:
             logger.error(f"Currency error: {e}")
-            self._announce("Currency detection failed")
+            self._announce_sync("Currency detection failed")
 
     # def _count_money(self):
     #     if not self.currency:
